@@ -8,6 +8,7 @@ export class solveDFS{
         this.end = end
         this.stack = [this.start]
         this.current = this.start
+        this.start.visited = true
 
     }
     
