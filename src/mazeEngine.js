@@ -79,7 +79,9 @@ export class mazeEngine {
                 this.ctx.strokeStyle = "lime"
                 this.ctx.lineWidth = 3
 
-                for (let i = 0; i < this.solver.stack.length; i++) {
+                 this.ctx.moveTo(this.solver.stack[0].x + this.solver.stack[0].width / 2, this.solver.stack[0].y + this.solver.stack[0].height / 2)
+
+                for (let i = 1; i < this.solver.stack.length; i++) {
 
                     this.ctx.lineTo(this.solver.stack[i].x + this.solver.stack[i].width / 2, this.solver.stack[i].y + this.solver.stack[i].height / 2)
                 }
