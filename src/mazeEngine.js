@@ -26,7 +26,7 @@ export class mazeEngine {
 
     createGrid() {
 
-        let desiredCellsize = 5
+        let desiredCellsize = 8
         this.cols = Math.floor(innerWidth / desiredCellsize)
         this.rows = Math.floor(innerHeight / desiredCellsize)
         let cellWidth = this.dpr * innerWidth / this.cols
