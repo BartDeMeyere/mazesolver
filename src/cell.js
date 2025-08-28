@@ -17,6 +17,7 @@ export class Cell{
     draw(ctx){
 
         ctx.strokeStyle = "rgb(60,60,60)";
+        //ctx.lineWidth = 0.4;
     
         let x = this.x;
         let y = this.y;

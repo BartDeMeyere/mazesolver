@@ -18,15 +18,17 @@ export class mazeEngine {
         this.rows = null
         this.cols = null
         this.solver = null
+        this.display_output = false
         this.createGrid()
         this.createMaze()
         this.solve("dfs")
+     
 
     }
 
     createGrid() {
 
-        let desiredCellsize = 8
+        let desiredCellsize = 7
         this.cols = Math.floor(innerWidth / desiredCellsize)
         this.rows = Math.floor(innerHeight / desiredCellsize)
         let cellWidth = this.dpr * innerWidth / this.cols
@@ -79,7 +81,7 @@ export class mazeEngine {
                 this.ctx.strokeStyle = "lime"
                 this.ctx.lineWidth = 3
 
-                 this.ctx.moveTo(this.solver.stack[0].x + this.solver.stack[0].width / 2, this.solver.stack[0].y + this.solver.stack[0].height / 2)
+                this.ctx.moveTo(this.solver.stack[0].x + this.solver.stack[0].width / 2, this.solver.stack[0].y + this.solver.stack[0].height / 2)
 
                 for (let i = 1; i < this.solver.stack.length; i++) {
 
@@ -88,6 +90,11 @@ export class mazeEngine {
 
                 this.ctx.stroke()
                 this.ctx.closePath()
+
+                if(this.display_output){
+
+                    document.querySelector(".pathlength").innerHTML = "Huidig pad heeft " + this.solver.stack.length + " cellen." 
+                }
             }
 
             requestAnimationFrame(innerloop)
