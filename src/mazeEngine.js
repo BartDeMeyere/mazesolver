@@ -1,5 +1,6 @@
 import { Cell } from "./cell.js"
 import { solveDFS } from "./solveDFS.js"
+import { solveAstar } from "./solveAstar.js"
 
 export class mazeEngine {
 
@@ -18,17 +19,15 @@ export class mazeEngine {
         this.rows = null
         this.cols = null
         this.solver = null
-        this.display_output = false
         this.createGrid()
         this.createMaze()
-        this.solve("dfs")
-     
+        this.render()
 
     }
 
     createGrid() {
 
-        let desiredCellsize = 7
+        let desiredCellsize = 15
         this.cols = Math.floor(innerWidth / desiredCellsize)
         this.rows = Math.floor(innerHeight / desiredCellsize)
         let cellWidth = this.dpr * innerWidth / this.cols
@@ -48,32 +47,41 @@ export class mazeEngine {
         this.end = this.pickRandomCell()
     }
 
-    render() {
+    animate() {
 
         let innerloop = () => {
 
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            if (this.solver.finished) {
+                console.log("done")
+                this.render()
+                return
 
-            //draw start
-            this.ctx.beginPath()
-            this.ctx.fillStyle = "magenta"
-            this.ctx.rect(this.start.x , this.start.y , this.start.width , this.start.height)
-            this.ctx.fill()
-            this.ctx.closePath()
+            } else {
 
-            //draw end
-            this.ctx.beginPath()
-            this.ctx.fillStyle = "yellow"
-            this.ctx.rect(this.end.x , this.end.y , this.end.width , this.end.height)
-            this.ctx.fill()
-            this.ctx.closePath()
+                this.render()
 
-            //draw the maze
-            this.grid.forEach(row => {
-                row.forEach(cell => cell.draw(this.ctx));
-            });
+            }
 
-            //draw path depth first search
+            //console.log("animating in progress..")
+
+            requestAnimationFrame(innerloop)
+        }
+
+        innerloop()
+    }
+
+    render() {
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+
+        //draw the maze
+        this.grid.forEach(row => {
+            row.forEach(cell => cell.draw(this.ctx));
+        });
+
+        if (this.solver) {
+
+            //render Dfs alogrithm
             if (this.solver.algo === "dfs") {
 
                 //render dfs path
@@ -91,16 +99,67 @@ export class mazeEngine {
                 this.ctx.stroke()
                 this.ctx.closePath()
 
-                if(this.display_output){
-
-                    document.querySelector(".pathlength").innerHTML = "Huidig pad heeft " + this.solver.stack.length + " cellen." 
-                }
             }
 
-            requestAnimationFrame(innerloop)
+            //render Astar algorithm
+            if (this.solver.algo === "Astar") {
+
+                for (let i = 0; i < this.solver.closedset.length; i++) {
+
+                    this.ctx.beginPath()
+                    this.ctx.fillStyle = "rgba(128, 0, 128,.5)"
+                    this.ctx.rect(this.solver.closedset[i].x, this.solver.closedset[i].y, this.solver.closedset[i].width, this.solver.closedset[i].height)
+                    this.ctx.fill()
+                    this.ctx.closePath()
+                }
+
+                for (let i = 0; i < this.solver.openset.length; i++) {
+
+                    this.ctx.beginPath()
+                    this.ctx.fillStyle = "rgba(0, 255, 0, 0.8)"
+                    this.ctx.rect(this.solver.openset[i].x, this.solver.openset[i].y, this.solver.openset[i].width, this.solver.openset[i].height)
+                    this.ctx.fill()
+                    this.ctx.closePath()
+                }
+
+                if (this.solver.path.length > 0) {
+
+                    //render Astar  path
+                    this.ctx.save()
+                    this.ctx.beginPath()
+                    this.ctx.strokeStyle = "lime"
+                    this.ctx.lineWidth = 3
+
+                    this.ctx.moveTo(this.solver.path[0].x + this.solver.path[0].width / 2, this.solver.path[0].y + this.solver.path[0].height / 2)
+
+                    for (let i = 1; i < this.solver.path.length; i++) {
+
+                        this.ctx.lineTo(this.solver.path[i].x + this.solver.path[i].width / 2, this.solver.path[i].y + this.solver.path[i].height / 2)
+                    }
+
+                    this.ctx.stroke()
+                    this.ctx.closePath()
+                    this.ctx.restore()
+
+                }
+
+            }
         }
 
-        innerloop()
+
+        //draw start
+        this.ctx.beginPath()
+        this.ctx.fillStyle = "magenta"
+        this.ctx.rect(this.start.x, this.start.y, this.start.width, this.start.height)
+        this.ctx.fill()
+        this.ctx.closePath()
+
+        //draw end
+        this.ctx.beginPath()
+        this.ctx.fillStyle = "yellow"
+        this.ctx.rect(this.end.x, this.end.y, this.end.width, this.end.height)
+        this.ctx.fill()
+        this.ctx.closePath()
 
     }
 
@@ -188,8 +247,21 @@ export class mazeEngine {
             case "dfs":
                 this.solver = new solveDFS("dfs", this.grid, this.start, this.end);
                 this.solver.solve()
-                this.render()
                 break;
+            case "Astar":
+                this.solver = new solveAstar("Astar", this.grid, this.start, this.end);
+                this.solver.solve()
+                break;
+        }
+    }
+
+    clear(){
+
+        this.solver = null
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                this.grid[i][j].visited = false
+            }
         }
     }
 }

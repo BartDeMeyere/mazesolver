@@ -12,12 +12,16 @@ export class Cell{
         this.left = true 
         this.visited = false
     
+        this.g = 0
+        this.h = 0 
+        this.f = 0
+        this.parent = null
     }
 
     draw(ctx){
 
         ctx.strokeStyle = "rgb(60,60,60)";
-        //ctx.lineWidth = 0.4;
+        ctx.lineWidth = 2;
     
         let x = this.x;
         let y = this.y;

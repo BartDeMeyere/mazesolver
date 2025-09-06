@@ -9,7 +9,12 @@ export class solveDFS{
         this.stack = [this.start]
         this.start.visited = true
         this.current = this.start
+        this.cancelled = false
 
+    }
+
+    cancel() {
+        this.cancelled = true;
     }
     
     getNeighbors(r,c){
@@ -48,13 +53,16 @@ export class solveDFS{
 
         let innerloop = () => {
 
+            //console.log("solving")
+            if (this.cancelled) return;
+
             let next = this.getNeighbors(this.current.row , this.current.col)
 
             if(next === this.end){
 
                 this.stack.push(this.end)
                 this.end.visited = true
-                console.log("we are done")
+                this.finished = true
                 return
             }
 
@@ -80,8 +88,7 @@ export class solveDFS{
                
             }
 
-
-            requestAnimationFrame(innerloop)
+           requestAnimationFrame(innerloop)
         }
 
         innerloop()
